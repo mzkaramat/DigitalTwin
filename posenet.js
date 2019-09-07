@@ -22,9 +22,11 @@ function setup() {
   // Hide the video element, and just show the canvas
   video.hide();
 
-  // heart_img = loadGif("heart.gif");
   gif_loadImg = loadImage("heart.gif");
-  // gif_loadImg = createImg("heart.gif").size(100, 120);
+  brain_img = loadImage("brainFront.png");
+  kidneys_img= loadImage("kidneys.png");
+
+  //gif_createImg = createImg("heart.gif").size(100, 120);
 }
 
 function draw() {
@@ -40,7 +42,7 @@ function modelReady(){
 }
 
 function calDistance(first, second){
-  return Math.pow((Math.pow((first.x - second.x), 2) + Math.pow((first.y - second.y), 2)), 0.5)
+    return Math.pow((Math.pow((first.x - second.x), 2) + Math.pow((first.y - second.y), 2)), 0.5)
 }
 
 // A function to draw ellipses over the detected keypoints
@@ -49,21 +51,38 @@ function drawKeypoints()  {
   // Loop through all the poses detected
   for (let i = 0; i < poses.length; i++) {
 
-    // For each pose detected, loop through all the keypoints
-    let pose = poses[i].pose;
-    let leftShoulder = pose.keypoints.filter(function (el) {
-            return el.part == "leftShoulder" ;
-          })[0];
+  // For each pose detected, loop through all the keypoints
+  let pose = poses[i].pose;
+  let leftShoulder = pose.keypoints.filter(function (el) {
+          return el.part == "leftShoulder" ;
+        })[0];
 
-    let rightShoulder = pose.keypoints.filter(function (el) {
-            return el.part == "rightShoulder" ;
-          })[0];
+  let rightShoulder = pose.keypoints.filter(function (el) {
+          return el.part == "rightShoulder" ;
+        })[0];
 
-    let nose_keypoint = pose.keypoints.filter(function (el) {
-            return el.part == "nose" ;
-          })[0];
-    let scale = calDistance(leftShoulder.position, rightShoulder.position)/ 3
+let rightHip = pose.keypoints.filter(function (el) {
+          return el.part == "rightHip" ;
+        })[0];
+
+
+  let brain_pose = pose.keypoints.filter(function (el) {
+          return el.part == "nose" ;
+        })[0];
+
+  let leftShoulder_img = pose.keypoints.filter(function (el) {
+          return el.part == "rightWrist" ;
+        })[0];
+
+  let scale = calDistance(leftShoulder.position, rightShoulder.position)/ 3
+    
+    image(brain_img, brain_pose.position.x - 100, brain_pose.position.y - 180,scale* 2,scale * 2);
     image(gif_loadImg, leftShoulder.position.x - 70, leftShoulder.position.y - 10, scale, scale * 1.2);
+    image(kidneys_img, rightHip.position.x + 10, rightHip.position.y - 100, scale * 2, scale * 2.4);
+
+    //image(brain_img, brain_pose.position.x - 80, brain_pose.position.y - 200,180, 180);
+
+
     prevPoint = leftShoulder;
 
   }
@@ -71,5 +90,5 @@ function drawKeypoints()  {
 
 // A function to draw the skeletons
 function drawSkeleton() {
- 
+
 }

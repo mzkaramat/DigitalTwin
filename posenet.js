@@ -1,12 +1,17 @@
 let video;
 let poseNet;
 let poses = [];
-var gif_loadImg, gif_createImg, prevPoint;
+var  gif_loadImg, gif_createImg, prevPoint;
 
 function setup() {
   const canvas = createCanvas(640, 480);
   canvas.parent('videoContainer');
-
+  prevPoint = {
+    position: {
+      x: 0,
+      y: 0
+  }
+}
   // Video capture
   video = createCapture(VIDEO);
   video.size(width, height);
@@ -53,38 +58,35 @@ function drawKeypoints()  {
 
   // For each pose detected, loop through all the keypoints
   let pose = poses[i].pose;
-  let leftShoulder = pose.keypoints.filter(function (el) {
-          return el.part == "leftShoulder" ;
-        })[0];
-
-  let rightShoulder = pose.keypoints.filter(function (el) {
-          return el.part == "rightShoulder" ;
-        })[0];
-
-let rightHip = pose.keypoints.filter(function (el) {
-          return el.part == "rightHip" ;
-        })[0];
-
-
-  let brain_pose = pose.keypoints.filter(function (el) {
-          return el.part == "nose" ;
-        })[0];
-
-  let leftShoulder_img = pose.keypoints.filter(function (el) {
-          return el.part == "rightWrist" ;
-        })[0];
+  let leftShoulder = getVal("leftShoulder", pose);
+  let rightShoulder = getVal("rightShoulder", pose);
+  let rightHip = getVal("rightHip", pose);
+  let nose = getVal("nose", pose);
+  let rightWrist = getVal("rightWrist", pose);
 
   let scale = calDistance(leftShoulder.position, rightShoulder.position)/ 3
     
-    image(brain_img, brain_pose.position.x - 100, brain_pose.position.y - 180,scale* 2,scale * 2);
-    image(gif_loadImg, leftShoulder.position.x - 70, leftShoulder.position.y - 10, scale, scale * 1.2);
-    image(kidneys_img, rightHip.position.x + 10, rightHip.position.y - 100, scale * 2, scale * 2.4);
+  image(brain_img, nose.position.x - scale, nose.position.y - scale*1.8, scale* 2,scale * 2);
+  image(gif_loadImg, leftShoulder.position.x - scale*0.7, leftShoulder.position.y - 10, scale, scale * 1.2);
+  image(kidneys_img, rightHip.position.x + scale*0.1, rightHip.position.y - scale, scale * 2, scale * 2.4);
+  prevPoint = leftShoulder;
+  console.log(prevPoint);
 
-    //image(brain_img, brain_pose.position.x - 80, brain_pose.position.y - 200,180, 180);
+    //image(brain_img, nose.position.x - 80, nose.position.y - 200,180, 180);
 
 
-    prevPoint = leftShoulder;
+  }
+}
 
+function getVal(val, pose) {
+  let new_points = pose.keypoints.filter(function (el) {
+          return el.part == val ;
+    })[0];
+  if (prevPoint[val] == undefined || (calDistance(prevPoint[val].position, new_points.position) > 15)) {
+    prevPoint[val] = new_points
+    return new_points
+  }else {
+    return prevPoint[val]
   }
 }
 

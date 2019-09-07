@@ -22,8 +22,10 @@ function setup() {
   // Hide the video element, and just show the canvas
   video.hide();
 
-  heart_img = loadGif("heart.gif");
   gif_loadImg = loadImage("heart.gif");
+  brain_img = loadImage("brainFront.png");
+  kidneys_img= loadImage("kidneys.png");
+
   //gif_createImg = createImg("heart.gif").size(100, 120);
 }
 
@@ -39,63 +41,56 @@ function modelReady(){
   //select('#status').html('model Loaded')
 }
 
+function calDistance(first, second){
+    return Math.pow((Math.pow((first.x - second.x), 2) + Math.pow((first.y - second.y), 2)), 0.5)
+  }
+
 // A function to draw ellipses over the detected keypoints
 function drawKeypoints()  {
 
-  debugger
   // Loop through all the poses detected
   for (let i = 0; i < poses.length; i++) {
 
 
     // For each pose detected, loop through all the keypoints
-    let pose = poses[i].pose;
-    let keypoint = pose.keypoints.filter(function (el) {
-            return el.part == "leftShoulder" ;
-          })[0];
+  let pose = poses[i].pose;
+  let leftShoulder = pose.keypoints.filter(function (el) {
+          return el.part == "leftShoulder" ;
+        })[0];
+
+  let rightShoulder = pose.keypoints.filter(function (el) {
+          return el.part == "rightShoulder" ;
+        })[0];
+
+let rightHip = pose.keypoints.filter(function (el) {
+          return el.part == "rightHip" ;
+        })[0];
 
 
-    let keypoint = pose.keypoints.filter(function (el) {
-            return el.part == "nose" ;
-          })[0];
-      
+  let brain_pose = pose.keypoints.filter(function (el) {
+          return el.part == "nose" ;
+        })[0];
 
-      //keypoint.position.y +=10;
-      //keypoint.position.x -=10;
-      // Only draw an ellipse is the pose probability is bigger than 0.2
-      //gif_loadImg.position(keypoint.position.x, keypoint.position.y );
-      image(gif_loadImg, keypoint.position.x - 70, keypoint.position.y - 10,100, 120);
-      
-  
-    prevPoint = keypoint;
+  let leftShoulder_img = pose.keypoints.filter(function (el) {
+          return el.part == "rightWrist" ;
+        })[0];
+
+  let scale = calDistance(leftShoulder.position, rightShoulder.position)/ 3
+    
+    image(brain_img, brain_pose.position.x - 100, brain_pose.position.y - 180,scale* 2,scale * 2);
+    image(gif_loadImg, leftShoulder.position.x - 70, leftShoulder.position.y - 10, scale, scale * 1.2);
+    image(kidneys_img, rightHip.position.x + 10, rightHip.position.y - 100, scale * 2, scale * 2.4);
+
+    //image(brain_img, brain_pose.position.x - 80, brain_pose.position.y - 200,180, 180);
 
 
-    /*
-    for (let j = 0; j < pose.keypoints.length; j++) {
-      // A keypoint is an object describing a body part (like rightArm or leftShoulder)
-      let keypoint = pose.keypoints[j];
-      // Only draw an ellipse is the pose probability is bigger than 0.2
-      if (keypoint.score > 0.2) {
-        fill(255, 0, 0);
-        noStroke();
-        ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
-      }
-    }
-    */
+    prevPoint = leftShoulder;
+
+
   }
 }
 
 // A function to draw the skeletons
 function drawSkeleton() {
-  // Loop through all the skeletons detected
-  /*for (let i = 0; i < poses.length; i++) {
-    let skeleton = poses[i].skeleton;
-    // For every skeleton, loop through all body connections
-    for (let j = 0; j < skeleton.length; j++) {
-      let partA = skeleton[j][0];
-      let partB = skeleton[j][1];
-      stroke(255, 0, 0);
-      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
-    }
-  }
-  */
+
 }
